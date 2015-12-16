@@ -4,6 +4,7 @@
 #
 
 import psycopg2
+from contextlib import contextmanager
 
 
 def connect():
@@ -11,38 +12,45 @@ def connect():
     return psycopg2.connect("dbname=tournament")
 
 
-def deleteMatches():
-    """Remove all the match records from the database."""
+@contextmanager
+def getcursor():
+    """Nice little function to remove repetition.
+    http://blog.client9.com/2008/09/10/pyscopg2-and-connection-pooling-v1.html
+    https://docs.python.org/2.5/whatsnew/pep-343.html
+    """
     db = connect()
     c = db.cursor()
+    try:
+        yield c
+    except:
+        db.rollback()
+        raise
+    else:
+        db.commit()
+    finally:
+        db.close()
 
-    query = "delete from matches"
-    c.execute(query)
-    db.commit()
-    db.close()
+
+def deleteMatches():
+    """Remove all the match records from the database."""
+    with getcursor() as c:
+        query = "delete from matches"
+        c.execute(query)
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
-    db = connect()
-    c = db.cursor()
-
-    query = "delete from players"
-    c.execute(query)
-    db.commit()
-    db.close()
+    with getcursor() as c:
+        query = "delete from players"
+        c.execute(query)
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
-    db = connect()
-    c = db.cursor()
-
-    query = "select count(*) as playercount from players"
-    c.execute(query)
-    ROWS = c.fetchall()
-    db.close()
-    return ROWS[0][0]
+    with getcursor() as c:
+        query = "select count(*) as playercount from players"
+        c.execute(query)
+        return c.fetchone()[0]
 
 
 def registerPlayer(name):
@@ -54,13 +62,9 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-    db = connect()
-    c = db.cursor()
-
-    query = "insert into players (name) values (%s)"
-    c.execute(query, (name,))
-    db.commit()
-    db.close()
+    with getcursor() as c:
+        query = "insert into players (name) values (%s)"
+        c.execute(query, (name,))
 
 
 def playerStandings():
@@ -76,13 +80,10 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    db = connect()
-    c = db.cursor()
-    query = "select * from players_standings"
-    c.execute(query)
-    ROWS = c.fetchall()
-    db.close()
-    return ROWS
+    with getcursor() as c:
+        query = "select * from players_standings"
+        c.execute(query)
+        return c.fetchall()
 
 
 def reportMatch(winner, loser):
@@ -92,14 +93,10 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-    db = connect()
-    c = db.cursor()
-
-    query = "insert into matches (winner_id, loser_id) " +\
-            " values (%s, %s)"
-    c.execute(query, (winner, loser, ))
-    db.commit()
-    db.close()
+    with getcursor() as c:
+        query = "insert into matches (winner_id, loser_id) " +\
+               " values (%s, %s)"
+        c.execute(query, (winner, loser, ))
 
 
 def swissPairings():
