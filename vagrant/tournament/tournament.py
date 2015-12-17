@@ -14,7 +14,7 @@ def connect():
 
 @contextmanager
 def getcursor():
-    """Nice little function to remove repetition.
+    """Nice little function to remove repetition of database connection etc.
     http://blog.client9.com/2008/09/10/pyscopg2-and-connection-pooling-v1.html
     https://docs.python.org/2.5/whatsnew/pep-343.html
     """
@@ -29,6 +29,20 @@ def getcursor():
         db.commit()
     finally:
         db.close()
+
+
+def ismatchalreadyplayed(playerA, playerB):
+    """ """
+    with getcursor() as c:
+        query = "select count(*) from matches" +\
+                " where (winner_id = %s and loser_id = %s)" +\
+                " or (loser_id = %s and winner_id = %s)"
+        c.execute(query, (playerA, playerB, playerA, playerB, ))
+        if c.fetchone()[0] == 0:
+            return False
+        else:
+            return True
+    return False
 
 
 def deleteMatches():
@@ -86,13 +100,15 @@ def playerStandings():
         return c.fetchall()
 
 
-def reportMatch(winner, loser):
+def reportMatch(winner, loser, tie=False):
     """Records the outcome of a single match between two players.
 
     Args:
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
+    if ismatchalreadyplayed(winner, loser):
+        return
     with getcursor() as c:
         query = "insert into matches (winner_id, loser_id) " +\
                " values (%s, %s)"
@@ -104,7 +120,7 @@ def swissPairings():
 
     Assuming that there are an even number of players registered, each player
     appears exactly once in the pairings.  Each player is paired with another
-    player with an equal or nearly-equal win record, that is, a player adjacent
+    player with an equal or nearly-equal win record, that is, a player adjacentHere
     to him or her in the standings.
 
     Returns:

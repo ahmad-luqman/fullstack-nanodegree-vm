@@ -92,7 +92,7 @@ def testReportMatches():
     reportMatch(id3, id4)
     standings = playerStandings()
     for (i, n, w, m) in standings:
-        if m != 1:
+        if m != 1:  
             raise ValueError("Each player should have one match recorded.")
         if i in (id1, id3) and w != 1:
             raise ValueError("Each match winner should have one win recorded.")
@@ -123,6 +123,29 @@ def testPairings():
         raise ValueError(
             "After one match, players with one win should be paired.")
     print "8. After one match, players with one win are paired."
+    
+def testMatchUnique():
+    deleteMatches()
+    deletePlayers()
+    registerPlayer("Twilight Sparkle")
+    registerPlayer("Fluttershy")
+    registerPlayer("Applejack")
+    registerPlayer("Pinkie Pie")
+    standings = playerStandings()
+    [id1, id2, id3, id4] = [row[0] for row in standings]
+    reportMatch(id1, id2)
+    reportMatch(id3, id4)
+    reportMatch(id2, id1)
+    reportMatch(id3, id4)
+    standings = playerStandings()
+    for (i, n, w, m) in standings:
+        if m != 1:  
+            raise ValueError("Each player should have one match recorded.")
+        if i in (id1, id3) and w != 1:
+            raise ValueError("Each match winner should have one win recorded.")
+        elif i in (id2, id4) and w != 0:
+            raise ValueError("Each match loser should have zero wins recorded.")
+    print "9. After a match, rematch between same players will be skipped."
 
 
 if __name__ == '__main__':
@@ -134,6 +157,7 @@ if __name__ == '__main__':
     testStandingsBeforeMatches()
     testReportMatches()
     testPairings()
+    testMatchUnique()
     print "Success!  All tests pass!"
 
 
