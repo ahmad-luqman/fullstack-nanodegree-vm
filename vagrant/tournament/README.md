@@ -16,3 +16,6 @@ The following message would mean everything is working fine: Success!  All tests
 Assuming you have a running VM, if not please see the above section
 1. Connect to PostgreSQL shell using: psql
 2. Run the script on PostgreSQL shell to create tournament database: \i tournamentclean.sql
+
+## Extra credit features
+1. Prevent rematches between players.

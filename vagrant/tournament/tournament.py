@@ -100,7 +100,7 @@ def playerStandings():
         return c.fetchall()
 
 
-def reportMatch(winner, loser, tie=False):
+def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
 
     Args:
