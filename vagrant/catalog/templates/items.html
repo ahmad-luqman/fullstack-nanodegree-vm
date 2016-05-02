@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href='https://fonts.googleapis.com/css?family=Josefin+Sans:300,600' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div>
+        <a href="{{url_for('newCatalog')}}">
+            <button>Add Catalog</button>
+        </a>
+        <a href="{{url_for('newItem', cat_id = catalog.id)}}">
+            <button>Add Item</button>
+        </a>
+    </div>
+    <div class="row center">
+        <div class="col">
+            <h3>Categories</h3>
+            {% for catalog in catalogs %}
+            <a href="{{url_for('showCatalog', cat_name = catalog.name)}}">
+                {{catalog.name}}<br>
+            </a>
+            {% endfor %}
+        </div>
+        <div class="col">
+            <h3>{{catalog.name}} Items ({{count}} items)</h3>
+            {% for item in items %}
+            <a href="{{url_for('showItem', cat_name = catalog.name, item_name = item.title)}}">
+                {{item.title}}<br>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

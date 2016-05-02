@@ -1,0 +1,29 @@
+﻿body
+{
+    /*font-family: 'Josefin Sans', sans-serif;*/
+    font-family: 'Roboto', sans-serif;
+}
+
+.row {
+  display: table;
+}
+
+.col {
+  display: table-cell;
+  width: 50%; /* depends on the number of columns */
+
+  padding: 1em;
+  border: solid;
+}
+
+.center {
+    position:relative;
+    margin: auto;
+}
+
+.creatorimg {
+    height: auto; 
+    width: auto; 
+    max-width: 48px; 
+    max-height: 48px;
+}

@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href='https://fonts.googleapis.com/css?family=Josefin+Sans:300,600' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+<div>
+    <a href="{{url_for('newCatalog')}}">
+        <button>Add Catalog</button>
+    </a>
+</div>
+<div class='flash'>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+
+    <ul>
+        {% for message in messages %}
+        <li> <strong> {{ message }} </strong> </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+</div>
+<div class="row center">
+    <div class="col">
+        <h3>Categories</h3>
+        {% for catalog in catalogs %}
+        <a href="{{url_for('showCatalog', cat_name = catalog.name)}}">
+            {{catalog.name}}<br>
+        </a>
+        {% endfor %}
+    </div>
+    <div class="col">
+        <h3>Latest Items</h3>
+        {% for item_with_catalog in items_with_catalog %}
+        {{item_with_catalog.Item.title}} ({{item_with_catalog.Catalog.name}})<br>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>

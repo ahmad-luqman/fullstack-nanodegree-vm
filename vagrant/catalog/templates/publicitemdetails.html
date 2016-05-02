@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href='https://fonts.googleapis.com/css?family=Josefin+Sans:300,600' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+    <meta charset="utf-8" />
+    <title>{{item.title}} Details:</title>
+</head>
+<body>
+    <div>
+        {{ item.title }}
+        <figure>
+            <img class="creatorimg" src="{{creator.picture}}">
+            <figcaption>{{ creator.name }}</figcaption>
+        </figure>
+    </div>
+    <div>
+        <div>
+            <h3>Title: {{item.title}}</h3>
+            Description:<br>
+            {{item.description}}<br>
+        </div>
+    </div>
+</body>
+</html>
