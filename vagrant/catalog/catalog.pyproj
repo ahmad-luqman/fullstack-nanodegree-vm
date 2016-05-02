@@ -47,6 +47,7 @@
     <Content Include="templates\login.html" />
     <Content Include="templates\newCatalog.html" />
     <Content Include="templates\newItem.html" />
+    <Content Include="templates\publiccatalogs.html" />
     <Content Include="templates\publicitemdetails.html" />
   </ItemGroup>
   <PropertyGroup>

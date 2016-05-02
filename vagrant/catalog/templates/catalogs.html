@@ -9,10 +9,13 @@
     <title></title>
 </head>
 <body>
-<div>
+<!--<div>
     <a href="{{url_for('newCatalog')}}">
         <button>Add Catalog</button>
     </a>
+</div>-->
+<div>
+    <a href="{{url_for('gdisconnect')}}">Logout</a>
 </div>
 <div class='flash'>
     {% with messages = get_flashed_messages() %}

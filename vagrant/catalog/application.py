@@ -124,7 +124,7 @@ def gconnect():
     output += '<img src="'
     output += login_session['picture']
     output += ' " style = "width: 300px; height: 300px;border-radius: 150px;'
-    ouptut += '-webkit-border-radius: 150px;-moz-border-radius: 150px;">'
+    output += '-webkit-border-radius: 150px;-moz-border-radius: 150px;">'
     flash("you are now logged in as %s" % login_session['username'])
     print "done!"
     return output
@@ -204,8 +204,12 @@ def showCatalogs():
     catalogs = session.query(Catalog).order_by(asc(Catalog.name))
     items_with_catalog = session.query(Item, Catalog). \
         join(Catalog).order_by(desc(Item.inserted)).limit(9).all()
-    return render_template('catalogs.html', catalogs=catalogs,
-                           items_with_catalog=items_with_catalog)
+    if 'username' not in login_session:
+        return render_template('publiccatalogs.html', catalogs=catalogs,
+                               items_with_catalog=items_with_catalog)
+    else:
+        return render_template('catalogs.html', catalogs=catalogs,
+                               items_with_catalog=items_with_catalog)
 
 
 @app.route('/catalog/JSON')
@@ -260,41 +264,6 @@ def showItemJSON(cat_name, item_name):
     item = session.query(Item).filter_by(cat_id=catalog.id).\
         filter_by(title=item_name).one()
     return jsonify(Item=item.serialize)
-
-
-@app.route('/catalog/new/', methods=['GET', 'POST'])
-def newCatalog():
-    if request.method == 'POST':
-        newCatalog = Catalog(name=request.form['name'])
-        session.add(newCatalog)
-        flash('New Catalog %s successfully created!' % newCatalog.name)
-        session.commit()
-        return redirect(url_for('showCatalogs'))
-    else:
-        return render_template('newCatalog.html')
-
-
-@app.route('/catalog/<int:cat_id>/edit', methods=['GET', 'POST'])
-def editCatalog(cat_id):
-    if request.method == 'POST':
-        editedCatalog = session.query(Catalog).filter_by(id=cat_id).one()
-        editedCatalog.name = request.form['name']
-        session.add(editedCatalog)
-        session.commit()
-        return redirect(url_for('showCatalogs'))
-    else:
-        return render_template('editCatalog.html')
-
-
-@app.route('/catalog/<int:cat_id>/delete', methods=['GET', 'POST'])
-def deleteCatalog(cat_id):
-    catalogToDelete = session.query(Catalog).filter_by(id=cat_id).one()
-    if request.method == 'POST':
-        session.delete(catalogToDelete)
-        session.commit()
-        return redirect(url_for('showCatalogs', cat_id=cat_id))
-    else:
-        return render_template('deleteCatalog.html', catalog=catalogToDelete)
 
 
 @app.route('/catalog/<int:cat_id>/item/new', methods=['GET', 'POST'])
