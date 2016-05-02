@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="client_secrets.json" />
+    <Content Include="requirements.txt" />
     <Content Include="static\styles.css" />
     <Content Include="templates\catalogs.html" />
     <Content Include="templates\deleteCatalog.html" />
