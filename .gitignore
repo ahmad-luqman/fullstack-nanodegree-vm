@@ -6,3 +6,4 @@
 /vagrant/catalog/catalogitemwithuser.db
 /vagrant/catalog/.vs/catalog/v14/.suo
 /vagrant/catalog/.vs/config/applicationhost.config
+/vagrant/.vagrant/machines/default/virtualbox
