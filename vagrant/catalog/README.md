@@ -10,5 +10,7 @@
 6. Run the application on VM: python application.py
 7. Browse the URL from host OS browser: http://localhost:5000/
 
+See [requirements.txt](requirements.txt) for all python modules and the versions
+
 ## How to clean database
 Remove file catalogitemwithuser.db to clean database and start from step 4 to restart again
