@@ -220,6 +220,24 @@ def showCatalogsJSON():
                    Items=[i.serialize for i in items])
 
 
+# JSON APIs to view a catalog
+@app.route('/catalog/<string:cat_name>/items/JSON')
+def showCatalogJSON(cat_name):
+    catalog = session.query(Catalog).filter_by(name=cat_name).one()
+    items = session.query(Item).filter_by(cat_id=catalog.id).all()
+    return jsonify(Catalog=catalog.serialize,
+                   Items=[i.serialize for i in items])
+
+
+# Show a catalog
+@app.route('/catalog/<string:cat_name>/<string:item_name>/JSON')
+def showItemJSON(cat_name, item_name):
+    catalog = session.query(Catalog).filter_by(name=cat_name).one()
+    item = session.query(Item).filter_by(cat_id=catalog.id).\
+        filter_by(title=item_name).one()
+    return jsonify(Item=item.serialize)
+
+
 # Show a catalog
 @app.route('/catalog/<string:cat_name>/items/')
 def showCatalog(cat_name):
@@ -230,15 +248,6 @@ def showCatalog(cat_name):
     count = items_query.count()
     return render_template('items.html', items=items, catalogs=catalogs,
                            catalog=catalog, count=count)
-
-
-# JSON APIs to view a catalog
-@app.route('/catalog/<string:cat_name>/items/JSON')
-def showCatalogJSON(cat_name):
-    catalog = session.query(Catalog).filter_by(name=cat_name).one()
-    items = session.query(Item).filter_by(cat_id=catalog.id).all()
-    return jsonify(Catalog=catalog.serialize,
-                   Items=[i.serialize for i in items])
 
 
 # Show a catalog
@@ -255,15 +264,6 @@ def showItem(cat_name, item_name):
     else:
         return render_template('itemdetails.html', catalog=catalog,
                                item=item, creator=creator)
-
-
-# Show a catalog
-@app.route('/catalog/<string:cat_name>/<string:item_name>/JSON')
-def showItemJSON(cat_name, item_name):
-    catalog = session.query(Catalog).filter_by(name=cat_name).one()
-    item = session.query(Item).filter_by(cat_id=catalog.id).\
-        filter_by(title=item_name).one()
-    return jsonify(Item=item.serialize)
 
 
 @app.route('/catalog/<int:cat_id>/item/new', methods=['GET', 'POST'])
