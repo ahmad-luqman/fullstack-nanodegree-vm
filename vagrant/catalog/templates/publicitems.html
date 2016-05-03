@@ -9,11 +9,6 @@
     <title></title>
 </head>
 <body>
-    <div>
-        <a href="{{url_for('newItem', cat_name = catalog.name)}}">
-            <button>Add Item</button>
-        </a>
-    </div>
     <div class='flash'>
         {% with messages = get_flashed_messages() %}
         {% if messages %}

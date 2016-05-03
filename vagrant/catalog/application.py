@@ -258,8 +258,12 @@ def showCatalog(cat_name):
     items_query = session.query(Item).filter_by(cat_id=catalog.id)
     items = items_query.all()
     count = items_query.count()
-    return render_template('items.html', items=items, catalogs=catalogs,
-                           catalog=catalog, count=count)
+    if 'username' not in login_session:
+        return render_template('publicitems.html', items=items, catalogs=catalogs,
+                               catalog=catalog, count=count)
+    else:
+        return render_template('items.html', items=items, catalogs=catalogs,
+                               catalog=catalog, count=count)
 
 
 # Show a catalog
@@ -278,16 +282,18 @@ def showItem(cat_name, item_name):
                                item=item, creator=creator)
 
 
-@app.route('/catalog/<int:cat_id>/item/new', methods=['GET', 'POST'])
-def newItem(cat_id):
+@app.route('/catalog/<string:cat_name>/item/new', methods=['GET', 'POST'])
+def newItem(cat_name):
+    if 'username' not in login_session:
+        return redirect('/login')
     if request.method == 'POST':
-        catalog = session.query(Catalog).filter_by(id=cat_id).one()
+        catalog = session.query(Catalog).filter_by(name=cat_name).one()
         newItem = Item(title=request.form['name'],
                        description=request.form['description'],
-                       cat_id=cat_id, user_id=login_session['user_id'])
+                       cat_id=catalog.id, user_id=login_session['user_id'])
         session.add(newItem)
-        flash('')
         session.commit()
+        flash("New Item %s created" % newItem.title)
         return redirect('/catalog/%s/items/' % catalog.name)
     else:
         return render_template('newItem.html')
@@ -311,6 +317,7 @@ def editItem(cat_name, item_name):
         editedItem.description = request.form['description']
         session.add(editedItem)
         session.commit()
+        flash("Item %s successfully edited" % editedItem.title)
         return redirect('/catalog/%s/items/' % catalog.name)
     else:
         return render_template('editItem.html', item=editedItem)
@@ -331,6 +338,7 @@ def deleteItem(cat_name, item_name):
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
+        flash("Item %s successfully deleted" % item_name)
         return redirect('/catalog/%s/items/' % cat_name)
     else:
         return render_template('deleteItem.html', item=itemToDelete,

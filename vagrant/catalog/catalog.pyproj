@@ -50,6 +50,7 @@
     <Content Include="templates\newItem.html" />
     <Content Include="templates\publiccatalogs.html" />
     <Content Include="templates\publicitemdetails.html" />
+    <Content Include="templates\publicitems.html" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
