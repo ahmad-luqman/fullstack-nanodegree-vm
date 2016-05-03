@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request
 from flask import redirect, jsonify, url_for, flash
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.exc import MultipleResultsFound
 
 from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
@@ -223,19 +225,29 @@ def showCatalogsJSON():
 # JSON APIs to view a catalog
 @app.route('/catalog/<string:cat_name>/items/JSON')
 def showCatalogJSON(cat_name):
-    catalog = session.query(Catalog).filter_by(name=cat_name).one()
-    items = session.query(Item).filter_by(cat_id=catalog.id).all()
-    return jsonify(Catalog=catalog.serialize,
-                   Items=[i.serialize for i in items])
+    try:
+        catalog = session.query(Catalog).filter_by(name=cat_name).one()
+        items = session.query(Item).filter_by(cat_id=catalog.id).all()
+        return jsonify(Catalog=catalog.serialize,
+                       Items=[i.serialize for i in items])
+    except MultipleResultsFound:
+        return jsonify(Error="Multiple records found")
+    except NoResultFound:
+        return jsonify(Error="No result found")
 
 
 # Show a catalog
 @app.route('/catalog/<string:cat_name>/<string:item_name>/JSON')
 def showItemJSON(cat_name, item_name):
-    catalog = session.query(Catalog).filter_by(name=cat_name).one()
-    item = session.query(Item).filter_by(cat_id=catalog.id).\
-        filter_by(title=item_name).one()
-    return jsonify(Item=item.serialize)
+    try:
+        catalog = session.query(Catalog).filter_by(name=cat_name).one()
+        item = session.query(Item).filter_by(cat_id=catalog.id).\
+            filter_by(title=item_name).one()
+        return jsonify(Item=item.serialize)
+    except MultipleResultsFound:
+        return jsonify(Error="Multiple records found")
+    except NoResultFound:
+        return jsonify(Error="No result found")
 
 
 # Show a catalog
