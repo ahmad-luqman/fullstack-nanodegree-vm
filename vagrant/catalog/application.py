@@ -294,7 +294,7 @@ def showCatalog(cat_name):
                                catalog=catalog, count=count)
 
 
-# Show a catalog
+# Show an item
 @app.route('/catalog/<string:cat_name>/<string:item_name>/')
 def showItem(cat_name, item_name):
     catalog = session.query(Catalog).filter_by(name=cat_name).one()
@@ -310,6 +310,7 @@ def showItem(cat_name, item_name):
                                item=item, creator=creator)
 
 
+# Create a new Item
 @app.route('/catalog/<string:cat_name>/item/new', methods=['GET', 'POST'])
 @login_required
 def newItem(cat_name):
@@ -326,6 +327,7 @@ def newItem(cat_name):
         return render_template('newItem.html')
 
 
+# Edit an Item
 @app.route('/catalog/<string:cat_name>/<string:item_name>/edit',
            methods=['GET', 'POST'])
 @login_required
@@ -349,6 +351,7 @@ def editItem(cat_name, item_name):
         return render_template('editItem.html', item=editedItem)
 
 
+# Delete an Item
 @app.route('/catalog/<string:cat_name>/<string:item_name>/delete',
            methods=['GET', 'POST'])
 @login_required
