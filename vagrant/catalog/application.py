@@ -17,6 +17,7 @@ import httplib2
 import json
 from flask import make_response
 import requests
+from functools import wraps
 
 app = Flask(__name__)
 
@@ -176,6 +177,16 @@ def clearSession():
     return "Session cleared"
 
 
+# login_required decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in login_session:
+            return redirect('/login')
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 # User Helper Functions
 def createUser(login_session):
     newUser = User(name=login_session['username'], email=login_session[
@@ -259,8 +270,8 @@ def showCatalog(cat_name):
     items = items_query.all()
     count = items_query.count()
     if 'username' not in login_session:
-        return render_template('publicitems.html', items=items, catalogs=catalogs,
-                               catalog=catalog, count=count)
+        return render_template('publicitems.html', items=items,
+                               catalogs=catalogs, catalog=catalog, count=count)
     else:
         return render_template('items.html', items=items, catalogs=catalogs,
                                catalog=catalog, count=count)
@@ -283,9 +294,8 @@ def showItem(cat_name, item_name):
 
 
 @app.route('/catalog/<string:cat_name>/item/new', methods=['GET', 'POST'])
+@login_required
 def newItem(cat_name):
-    if 'username' not in login_session:
-        return redirect('/login')
     if request.method == 'POST':
         catalog = session.query(Catalog).filter_by(name=cat_name).one()
         newItem = Item(title=request.form['name'],
@@ -301,12 +311,11 @@ def newItem(cat_name):
 
 @app.route('/catalog/<string:cat_name>/<string:item_name>/edit',
            methods=['GET', 'POST'])
+@login_required
 def editItem(cat_name, item_name):
     cat_id = session.query(Catalog).filter_by(name=cat_name).one().id
     editedItem = session.query(Item).filter_by(title=item_name).\
         filter_by(cat_id=cat_id).one()
-    if 'username' not in login_session:
-        return redirect('/login')
     if editedItem.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not authorized \
                 to edit this item. Please create your own item in order to \
@@ -325,12 +334,11 @@ def editItem(cat_name, item_name):
 
 @app.route('/catalog/<string:cat_name>/<string:item_name>/delete',
            methods=['GET', 'POST'])
+@login_required
 def deleteItem(cat_name, item_name):
     cat_id = session.query(Catalog).filter_by(name=cat_name).one().id
     itemToDelete = session.query(Item).filter_by(title=item_name).\
         filter_by(cat_id=cat_id).one()
-    if 'username' not in login_session:
-        return redirect('/login')
     if itemToDelete.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not authorized \
                 to delete this item. Please create your own item in order to \
@@ -347,7 +355,7 @@ def deleteItem(cat_name, item_name):
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
-    # Uncomment the below line only for debugging. 
+    # Uncomment the below line only for debugging.
     # Make sure its not uncommented before check-in
-    #app.debug = True
+    # app.debug = True
     app.run(host='0.0.0.0', port=5000)
