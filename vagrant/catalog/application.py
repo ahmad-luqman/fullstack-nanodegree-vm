@@ -227,6 +227,10 @@ def showCatalogs():
 
 @app.route('/catalog/JSON')
 def showCatalogsJSON():
+    """
+    showCatalogsJSON: show all catalogs sorted alphabatically
+    and top 9 latest items from all catalogs in JSON format
+    """
     catalogs = session.query(Catalog).order_by(asc(Catalog.name)).all()
     items = session.query(Item).order_by(desc(Item.inserted)).limit(9).all()
     return jsonify(Catalogs=[c.serialize for c in catalogs],
@@ -236,6 +240,12 @@ def showCatalogsJSON():
 # JSON APIs to view a catalog
 @app.route('/catalog/<string:cat_name>/items/JSON')
 def showCatalogJSON(cat_name):
+    """
+    showCatalogJSON: show cataloga and all of items
+    in JSON format
+    cat_name:
+        cat_name (data type: string): catalog name
+    """
     try:
         catalog = session.query(Catalog).filter_by(name=cat_name).one()
         items = session.query(Item).filter_by(cat_id=catalog.id).all()
@@ -250,6 +260,13 @@ def showCatalogJSON(cat_name):
 # Show a catalog
 @app.route('/catalog/<string:cat_name>/<string:item_name>/JSON')
 def showItemJSON(cat_name, item_name):
+    """
+    showItemJSON: show item in JSON format
+    cat_name:
+        cat_name (data type: string): catalog name
+    item_name:
+        item_name (data type: string): item name
+    """
     try:
         catalog = session.query(Catalog).filter_by(name=cat_name).one()
         item = session.query(Item).filter_by(cat_id=catalog.id).\
